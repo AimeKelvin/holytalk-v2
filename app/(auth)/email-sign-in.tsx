@@ -13,17 +13,19 @@ import {
   Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react-native";
+import { Mail, Lock, Eye, EyeOff, ChevronLeft } from "lucide-react-native";
+import { useRouter } from "expo-router"; // ⬅️ If using React Navigation: import { useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 const logoSize = Math.min(width * 0.35, 160);
 
 const COLORS = {
-  bg: "#efefe8",   // soft app bg for this screen
+  bg: "#efefe8", // soft app bg for this screen
   text: "#1A1A1A",
   sub: "#3D3D3D",
   brand: "#b08968",
   brandDark: "#6e4f37",
+  Dark: "#292828ff",
   line: "#E6E6E6",
   soft: "#f5f5dc",
 };
@@ -33,6 +35,8 @@ export default function EmailSignIn() {
   useEffect(() => {
     Animated.timing(fade, { toValue: 1, duration: 500, useNativeDriver: true }).start();
   }, []);
+
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
@@ -53,7 +57,6 @@ export default function EmailSignIn() {
     if (!validate()) return;
     try {
       setBusy(true);
-      // TODO: call your API: await api.signInWithEmail({ email, password: pw })
       await new Promise((r) => setTimeout(r, 800));
       Alert.alert("Success", "Signed in!");
       // router.replace("/(tabs)/home");
@@ -66,6 +69,22 @@ export default function EmailSignIn() {
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
+      {/* Back arrow (icon only, no button background) */}
+      <TouchableOpacity
+      className="mt-10"
+        onPress={() => router.back()} 
+        style={{
+          position: "absolute",
+          top: 12,
+
+          left: 16,
+          zIndex: 50,
+        }}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
+        <ChevronLeft size={28} strokeWidth={2.5} color={COLORS.Dark} />
+      </TouchableOpacity>
+
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 28 }}>
         <Animated.View className="px-6" style={{ opacity: fade }}>
           {/* Logo */}
@@ -167,7 +186,6 @@ export default function EmailSignIn() {
 
           {/* Forgot password */}
           <View className="mt-3 items-end">
-            {/* Replace with <Link href="/(auth)/forgot"> if using expo-router */}
             <Text className="text-[13px] font-semibold" style={{ color: COLORS.brandDark }}>
               Forgot password?
             </Text>
