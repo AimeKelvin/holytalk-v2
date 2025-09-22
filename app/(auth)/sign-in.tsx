@@ -77,8 +77,8 @@ export default function SignIn() {
             Welcome to Biblion
           </Text>
 
-          <Text className="text-center text-[28px] font-extrabold leading-9 mt-1.5" style={{ color: COLORS.text }}>
-            Let’s walk <Text style={{ color: COLORS.brand }}>through Scripture</Text> together
+          <Text className="text-center text-[28px] font-extrabold leading-9 mt-1.5 mb-4" style={{ color: COLORS.text }}>
+            Let’s walk through <Text style={{ color: COLORS.brand }}> Scripture</Text> together
           </Text>
 
           <Text className="text-center text-[15px] mt-2.5" style={{ color: COLORS.sub }}>
