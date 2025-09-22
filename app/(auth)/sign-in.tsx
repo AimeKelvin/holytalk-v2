@@ -19,7 +19,7 @@ const { width } = Dimensions.get("window");
 const logoSize = Math.min(width * 0.35, 160);
 
 const COLORS = {
-  bg: "#FFFFFF",
+  bg: "#efefe8",
   text: "#1A1A1A",
   sub: "#3D3D3D",
   brand: "#b08968",
@@ -157,7 +157,7 @@ export default function SignIn() {
 
           {/* Email Button → redirect to email sign-in screen */}
           <TouchableOpacity
-            onPress={() => router.push("/(auth)/email-sign-in")} // ← THIS is the change
+            onPress={() => router.push("/(tabs)/home")} // ← THIS is the change
             className="w-full items-center rounded-2xl border py-3.5"
             style={{ backgroundColor: COLORS.soft, borderColor: COLORS.line }}
           >
