@@ -85,8 +85,7 @@ export default function SignIn() {
           </Text>
 
           <Text className="text-center text-[15px] mt-2.5" style={{ color: COLORS.sub }}>
-            A minimalist Bible app with Shep—your gentle guide. Build a habit,
-            share reflections, and keep your streaks alive.
+            Open the Word, share your thoughts, and let Shep encourage you back when life feels busy.
           </Text>
 
           {/* Google Button */}
@@ -174,7 +173,7 @@ export default function SignIn() {
               <Text
                 className="font-bold"
                 style={{ color: COLORS.brand }}
-                onPress={() => router.push("/(auth)/sign-in")}
+                onPress={() => router.push("/(auth)/sign-up")}
               >
                 Create an account
               </Text>

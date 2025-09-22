@@ -13,8 +13,8 @@ import {
   Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Mail, Lock, Eye, EyeOff, ChevronLeft } from "lucide-react-native";
-import { useRouter } from "expo-router"; // ⬅️ If using React Navigation: import { useNavigation } from "@react-navigation/native";
+import { Mail, Lock, Eye, EyeOff, ChevronLeft, Facebook } from "lucide-react-native";
+import { useRouter } from "expo-router"; // If using React Navigation: import { useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 const logoSize = Math.min(width * 0.35, 160);
@@ -30,18 +30,20 @@ const COLORS = {
   soft: "#f5f5dc",
 };
 
-export default function EmailSignIn() {
+export default function EmailSignUp() {
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(fade, { toValue: 1, duration: 500, useNativeDriver: true }).start();
   }, []);
 
-  const router = useRouter();
+  const router = useRouter(); // If using React Navigation: const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [loadingGoogle, setLoadingGoogle] = useState(false);
+  const [loadingFacebook, setLoadingFacebook] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; pw?: string }>({});
   const [focus, setFocus] = useState<{ email: boolean; pw: boolean }>({ email: false, pw: false });
 
@@ -57,13 +59,38 @@ export default function EmailSignIn() {
     if (!validate()) return;
     try {
       setBusy(true);
+      // TODO: call your API: await api.registerWithEmail({ email, password: pw })
       await new Promise((r) => setTimeout(r, 800));
-      Alert.alert("Success", "Signed in!");
+      Alert.alert("Success", "Account created!");
       // router.replace("/(tabs)/home");
     } catch (e: any) {
-      Alert.alert("Sign in failed", e?.message ?? "Please try again.");
+      Alert.alert("Sign up failed", e?.message ?? "Please try again.");
     } finally {
       setBusy(false);
+    }
+  };
+
+  const onGoogle = async () => {
+    try {
+      setLoadingGoogle(true);
+      // TODO: integrate Google OAuth for signup
+      await new Promise((r) => setTimeout(r, 600));
+    } catch (e: any) {
+      Alert.alert("Google sign-up failed", e?.message ?? "Try again.");
+    } finally {
+      setLoadingGoogle(false);
+    }
+  };
+
+  const onFacebook = async () => {
+    try {
+      setLoadingFacebook(true);
+      // TODO: integrate Facebook OAuth for signup
+      await new Promise((r) => setTimeout(r, 600));
+    } catch (e: any) {
+      Alert.alert("Facebook sign-up failed", e?.message ?? "Try again.");
+    } finally {
+      setLoadingFacebook(false);
     }
   };
 
@@ -71,21 +98,22 @@ export default function EmailSignIn() {
     <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
       {/* Back arrow (icon only, no button background) */}
       <TouchableOpacity
-      className="mt-10"
-        onPress={() => router.back()} 
+        className="mt-10"
+        onPress={() => router.back()} // Or navigation.goBack()
         style={{
           position: "absolute",
           top: 12,
-
           left: 16,
           zIndex: 50,
         }}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        accessibilityRole="button"
+        accessibilityLabel="Go back"
       >
         <ChevronLeft size={28} strokeWidth={2.5} color={COLORS.Dark} />
       </TouchableOpacity>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 28 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 36 }}>
         <Animated.View className="px-6" style={{ opacity: fade }}>
           {/* Logo */}
           <View className="items-center mt-14 mb-8">
@@ -105,11 +133,11 @@ export default function EmailSignIn() {
             className="text-center text-[28px] font-extrabold leading-9 mt-1.5 mb-4"
             style={{ color: COLORS.text }}
           >
-            Sign in with <Text style={{ color: COLORS.brand }}>Email</Text>
+            Create your account 
           </Text>
 
           <Text className="text-center text-[15px] mt-2.5" style={{ color: COLORS.sub }}>
-            Open the Word, share your thoughts, and let Shep encourage you back when life feels busy.
+          Open the Word, share your thoughts, and let Shep encourage you back when life feels busy.
           </Text>
 
           {/* Email field */}
@@ -183,14 +211,7 @@ export default function EmailSignIn() {
             {errors.pw && <Text className="mt-1 text-xs text-red-500">{errors.pw}</Text>}
           </View>
 
-          {/* Forgot password */}
-          <View className="mt-3 items-end">
-            <Text className="text-[13px] font-semibold" style={{ color: COLORS.brandDark }}>
-              Forgot password?
-            </Text>
-          </View>
-
-          {/* Sign in button */}
+          {/* Create Account button */}
           <TouchableOpacity
             onPress={onSubmit}
             disabled={busy}
@@ -205,21 +226,96 @@ export default function EmailSignIn() {
               elevation: 3,
             }}
             accessibilityRole="button"
-            accessibilityLabel="Sign in"
+            accessibilityLabel="Create account"
           >
             {busy ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="text-base font-semibold text-white">Sign In</Text>
+              <Text className="text-base font-semibold text-white">Create Account</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Spacer */}
+          <View className="mt-5" />
+
+          {/* Divider */}
+          <View className="my-2 flex-row items-center">
+            <View className="h-[1px] flex-1" style={{ backgroundColor: COLORS.line }} />
+            <Text className="mx-2 text-[13px]" style={{ color: COLORS.sub }}>
+              or
+            </Text>
+            <View className="h-[1px] flex-1" style={{ backgroundColor: COLORS.line }} />
+          </View>
+
+          {/* Social sign-up buttons (spacious & clean) */}
+          {/* Google */}
+          <TouchableOpacity
+            onPress={onGoogle}
+            activeOpacity={0.9}
+            disabled={loadingGoogle}
+            className="mt-4 w-full items-center justify-center rounded-full border bg-white py-3.5"
+            style={{
+              borderColor: COLORS.line,
+              shadowColor: "#000",
+              shadowOpacity: 0.06,
+              shadowRadius: 6,
+              shadowOffset: { width: 0, height: 4 },
+              elevation: 3,
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Sign up with Google"
+          >
+            {loadingGoogle ? (
+              <ActivityIndicator color={COLORS.brand} />
+            ) : (
+              <View className="flex-row items-center justify-center">
+                <Image
+                  source={require("../../assets/images/google.png")}
+                  className="mr-2 h-5 w-5"
+                  resizeMode="contain"
+                />
+                <Text className="text-base font-semibold" style={{ color: COLORS.text }}>
+                  Sign up with Google
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+
+          {/* Facebook */}
+          <TouchableOpacity
+            onPress={onFacebook}
+            activeOpacity={0.9}
+            disabled={loadingFacebook}
+            className="mt-3 w-full items-center justify-center rounded-full border bg-white py-3.5"
+            style={{
+              borderColor: COLORS.line,
+              shadowColor: "#000",
+              shadowOpacity: 0.06,
+              shadowRadius: 6,
+              shadowOffset: { width: 0, height: 4 },
+              elevation: 3,
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Sign up with Facebook"
+          >
+            {loadingFacebook ? (
+              <ActivityIndicator color="#1877F2" />
+            ) : (
+              <View className="flex-row items-center justify-center">
+                <Facebook size={20} color="#1877F2" />
+                <Text className="ml-2 text-base font-semibold" style={{ color: COLORS.text }}>
+                  Sign up with Facebook
+                </Text>
+              </View>
             )}
           </TouchableOpacity>
 
           {/* Footer */}
-          <View className="mt-4 items-center">
+          <View className="mt-6 items-center">
             <Text className="text-[14px]" style={{ color: COLORS.sub }}>
-              New here?{" "}
-              <Text className="font-bold" style={{ color: COLORS.brand }}>
-                Create an account
+              Already have an account?{" "}
+              <Text className="font-bold" style={{ color: COLORS.brand }} onPress={() => router.push("/(auth)/sign-in")}>
+                Sign in
               </Text>
             </Text>
           </View>
