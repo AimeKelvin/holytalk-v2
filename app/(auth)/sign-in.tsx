@@ -1,3 +1,4 @@
+// app/(auth)/sign-in.tsx
 import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -8,9 +9,14 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Facebook } from "lucide-react-native";
+import { useRouter } from "expo-router"; // ← add this
+
+const { width } = Dimensions.get("window");
+const logoSize = Math.min(width * 0.35, 160);
 
 const COLORS = {
   bg: "#FFFFFF",
@@ -23,6 +29,7 @@ const COLORS = {
 };
 
 export default function SignIn() {
+  const router = useRouter(); // ← get router
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingFacebook, setLoadingFacebook] = useState(false);
 
@@ -34,7 +41,6 @@ export default function SignIn() {
   const onGoogle = async () => {
     try {
       setLoadingGoogle(true);
-      // TODO: wire real Google OAuth
       await new Promise((r) => setTimeout(r, 600));
     } catch (e: any) {
       Alert.alert("Google sign-in failed", e?.message ?? "Try again.");
@@ -46,7 +52,6 @@ export default function SignIn() {
   const onFacebook = async () => {
     try {
       setLoadingFacebook(true);
-      // TODO: wire real Facebook OAuth
       await new Promise((r) => setTimeout(r, 600));
     } catch (e: any) {
       Alert.alert("Facebook sign-in failed", e?.message ?? "Try again.");
@@ -57,27 +62,25 @@ export default function SignIn() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#efefe8]">
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 28 }}
-      >
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 28 }}>
         <Animated.View className="px-6" style={{ opacity: fade }}>
           {/* Logo */}
-        {/* Logo */}
-<View className="items-center mt-14 mb-6">
-  <Image
-    source={require("../../assets/images/logo.png")}
-    className="h-28 w-28"   // bigger than before (was h-20 w-20)
-    resizeMode="contain"
-  />
-</View>
-
+          <View className="items-center mt-14 mb-8">
+            <Image
+              source={require("../../assets/images/logo.png")}
+              style={{ width: logoSize, height: logoSize }}
+              resizeMode="contain"
+            />
+          </View>
 
           <Text className="uppercase tracking-wide text-center text-[13px]" style={{ color: COLORS.sub }}>
             Welcome to Biblion
           </Text>
 
-          <Text className="text-center text-[28px] font-extrabold leading-9 mt-1.5 mb-4" style={{ color: COLORS.text }}>
+          <Text
+            className="text-center text-[28px] font-extrabold leading-9 mt-1.5 mb-4"
+            style={{ color: COLORS.text }}
+          >
             Let’s walk through <Text style={{ color: COLORS.brand }}> Scripture</Text> together
           </Text>
 
@@ -147,27 +150,33 @@ export default function SignIn() {
           {/* Divider */}
           <View className="my-5 flex-row items-center">
             <View className="h-[1px] flex-1" style={{ backgroundColor: COLORS.line }} />
-            <Text className="mx-2" style={{ color: COLORS.sub }}>or</Text>
+            <Text className="mx-2" style={{ color: COLORS.sub }}>
+              or
+            </Text>
             <View className="h-[1px] flex-1" style={{ backgroundColor: COLORS.line }} />
           </View>
 
-          {/* Email Button */}
+          {/* Email Button → redirect to email sign-in screen */}
           <TouchableOpacity
-            onPress={() => Alert.alert("Info", "Email sign up coming soon.")}
+            onPress={() => router.push("/(auth)/email-sign-in")} // ← THIS is the change
             className="w-full items-center rounded-2xl border py-3.5"
             style={{ backgroundColor: COLORS.soft, borderColor: COLORS.line }}
           >
             <Text className="font-bold" style={{ color: COLORS.brandDark }}>
-              Sign up with Email
+              Sign in with Email
             </Text>
           </TouchableOpacity>
 
           {/* Footer */}
           <View className="mt-4 items-center">
             <Text className="text-[14px]" style={{ color: COLORS.sub }}>
-              Already have an account?{" "}
-              <Text className="font-bold" style={{ color: COLORS.brand }}>
-                Sign in
+              New here?{" "}
+              <Text
+                className="font-bold"
+                style={{ color: COLORS.brand }}
+                onPress={() => router.push("/(auth)/sign-in")}
+              >
+                Create an account
               </Text>
             </Text>
           </View>
