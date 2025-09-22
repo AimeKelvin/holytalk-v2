@@ -63,16 +63,18 @@ export default function SignIn() {
       >
         <Animated.View className="px-6" style={{ opacity: fade }}>
           {/* Logo */}
-          <View className="items-center mt-12 mb-6">
-            <Image
-              source={require("../../assets/images/logo.png")}
-              className="h-20 w-20"
-              resizeMode="cover"
-            />
-          </View>
+        {/* Logo */}
+<View className="items-center mt-14 mb-6">
+  <Image
+    source={require("../../assets/images/logo.png")}
+    className="h-28 w-28"   // bigger than before (was h-20 w-20)
+    resizeMode="contain"
+  />
+</View>
+
 
           <Text className="uppercase tracking-wide text-center text-[13px]" style={{ color: COLORS.sub }}>
-            Welcome to HolyTalk
+            Welcome to Biblion
           </Text>
 
           <Text className="text-center text-[28px] font-extrabold leading-9 mt-1.5" style={{ color: COLORS.text }}>
