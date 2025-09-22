@@ -1,0 +1,182 @@
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  Animated,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Facebook } from "lucide-react-native";
+
+const COLORS = {
+  bg: "#FFFFFF",
+  text: "#1A1A1A",
+  sub: "#3D3D3D",
+  brand: "#b08968",
+  brandDark: "#6e4f37",
+  line: "#E6E6E6",
+  soft: "#f5f5dc",
+};
+
+export default function SignIn() {
+  const [loadingGoogle, setLoadingGoogle] = useState(false);
+  const [loadingFacebook, setLoadingFacebook] = useState(false);
+
+  const fade = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(fade, { toValue: 1, duration: 500, useNativeDriver: true }).start();
+  }, []);
+
+  const onGoogle = async () => {
+    try {
+      setLoadingGoogle(true);
+      // TODO: wire real Google OAuth
+      await new Promise((r) => setTimeout(r, 600));
+    } catch (e: any) {
+      Alert.alert("Google sign-in failed", e?.message ?? "Try again.");
+    } finally {
+      setLoadingGoogle(false);
+    }
+  };
+
+  const onFacebook = async () => {
+    try {
+      setLoadingFacebook(true);
+      // TODO: wire real Facebook OAuth
+      await new Promise((r) => setTimeout(r, 600));
+    } catch (e: any) {
+      Alert.alert("Facebook sign-in failed", e?.message ?? "Try again.");
+    } finally {
+      setLoadingFacebook(false);
+    }
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-[#efefe8]">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 28 }}
+      >
+        <Animated.View className="px-6" style={{ opacity: fade }}>
+          {/* Logo */}
+          <View className="items-center mt-12 mb-6">
+            <Image
+              source={require("../../assets/images/logo.png")}
+              className="h-20 w-20"
+              resizeMode="cover"
+            />
+          </View>
+
+          <Text className="uppercase tracking-wide text-center text-[13px]" style={{ color: COLORS.sub }}>
+            Welcome to HolyTalk
+          </Text>
+
+          <Text className="text-center text-[28px] font-extrabold leading-9 mt-1.5" style={{ color: COLORS.text }}>
+            Let’s walk <Text style={{ color: COLORS.brand }}>through Scripture</Text> together
+          </Text>
+
+          <Text className="text-center text-[15px] mt-2.5" style={{ color: COLORS.sub }}>
+            A minimalist Bible app with Shep—your gentle guide. Build a habit,
+            share reflections, and keep your streaks alive.
+          </Text>
+
+          {/* Google Button */}
+          <TouchableOpacity
+            onPress={onGoogle}
+            activeOpacity={0.9}
+            disabled={loadingGoogle}
+            className="mt-6 w-full items-center justify-center rounded-full border bg-white py-3.5"
+            style={{
+              borderColor: COLORS.line,
+              shadowColor: "#000",
+              shadowOpacity: 0.06,
+              shadowRadius: 6,
+              shadowOffset: { width: 0, height: 4 },
+              elevation: 3,
+            }}
+          >
+            {loadingGoogle ? (
+              <ActivityIndicator color={COLORS.brand} />
+            ) : (
+              <View className="flex-row items-center justify-center">
+                <Image
+                  source={require("../../assets/images/google.png")}
+                  className="mr-2 h-5 w-5"
+                  resizeMode="contain"
+                />
+                <Text className="text-base font-semibold" style={{ color: COLORS.text }}>
+                  Continue with Google
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+
+          {/* Facebook Button */}
+          <TouchableOpacity
+            onPress={onFacebook}
+            activeOpacity={0.9}
+            disabled={loadingFacebook}
+            className="mt-3 w-full items-center justify-center rounded-full border bg-white py-3.5"
+            style={{
+              borderColor: COLORS.line,
+              shadowColor: "#000",
+              shadowOpacity: 0.06,
+              shadowRadius: 6,
+              shadowOffset: { width: 0, height: 4 },
+              elevation: 3,
+            }}
+          >
+            {loadingFacebook ? (
+              <ActivityIndicator color="#1877F2" />
+            ) : (
+              <View className="flex-row items-center justify-center">
+                <Facebook size={20} color="#1877F2" />
+                <Text className="ml-2 text-base font-semibold" style={{ color: COLORS.text }}>
+                  Continue with Facebook
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+
+          {/* Divider */}
+          <View className="my-5 flex-row items-center">
+            <View className="h-[1px] flex-1" style={{ backgroundColor: COLORS.line }} />
+            <Text className="mx-2" style={{ color: COLORS.sub }}>or</Text>
+            <View className="h-[1px] flex-1" style={{ backgroundColor: COLORS.line }} />
+          </View>
+
+          {/* Email Button */}
+          <TouchableOpacity
+            onPress={() => Alert.alert("Info", "Email sign up coming soon.")}
+            className="w-full items-center rounded-2xl border py-3.5"
+            style={{ backgroundColor: COLORS.soft, borderColor: COLORS.line }}
+          >
+            <Text className="font-bold" style={{ color: COLORS.brandDark }}>
+              Sign up with Email
+            </Text>
+          </TouchableOpacity>
+
+          {/* Footer */}
+          <View className="mt-4 items-center">
+            <Text className="text-[14px]" style={{ color: COLORS.sub }}>
+              Already have an account?{" "}
+              <Text className="font-bold" style={{ color: COLORS.brand }}>
+                Sign in
+              </Text>
+            </Text>
+          </View>
+
+          <View className="mt-5 items-center">
+            <Text className="text-center text-[12px] text-[#6f6f6f]">
+              Shep: “One step at a time. Your info stays private.”
+            </Text>
+          </View>
+        </Animated.View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
