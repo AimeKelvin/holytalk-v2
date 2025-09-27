@@ -1,7 +1,7 @@
 import { View, Text, useColorScheme, Platform } from "react-native";
 import { Link } from "expo-router";
 
-export default function Home() {
+export default function Browse() {
   const isDark = useColorScheme() === "dark";
 
   const THEME = Platform.select({
@@ -18,7 +18,7 @@ export default function Home() {
       style={{ backgroundColor: THEME.bg as any }}
     >
       <Text className="text-2xl font-bold" style={{ color: THEME.text as any }}>
-        Home
+        Browse
       </Text>
 
       {/* example link */}

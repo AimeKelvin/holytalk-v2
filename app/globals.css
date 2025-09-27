@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Theme tokens */
+:root {
+  --app-bg: #ffffff;
+  --app-text: #0b0b0b;
+  --app-sub: #6b7280;
+  --app-line: #e5e7eb;
+  --app-soft: #f3f4f6;
+  --app-card: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --app-bg: #0b0b0b;
+    --app-text: #ffffff;
+    --app-sub: #9ca3af;
+    --app-line: #2a2a2a;
+    --app-soft: #151515;
+    --app-card: #111111;
+  }
+}
+
+/* Utility classes for react-native-web / Expo web */
+.bg-app   { background-color: var(--app-bg) !important; }
+.bg-soft  { background-color: var(--app-soft) !important; }
+.bg-card  { background-color: var(--app-card) !important; }
+
+.text-app { color: var(--app-text) !important; }
+.text-sub { color: var(--app-sub) !important; }
+
+.border-line { border-color: var(--app-line) !important; }
+
+.btn-neutral {
+  background-color: var(--app-card);
+  color: var(--app-text);
+  border: 1px solid var(--app-line);
+}

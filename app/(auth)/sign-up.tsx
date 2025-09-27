@@ -1,3 +1,4 @@
+// app/(auth)/sign-up.tsx (or whatever path you use)
 import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -11,24 +12,15 @@ import {
   TextInput,
   Pressable,
   Dimensions,
+  useColorScheme,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Mail, Lock, Eye, EyeOff, ChevronLeft, Facebook } from "lucide-react-native";
-import { useRouter } from "expo-router"; // If using React Navigation: import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
-const logoSize = Math.min(width * 0.35, 160);
-
-const COLORS = {
-  bg: "#efefe8", // soft app bg for this screen
-  text: "#1A1A1A",
-  sub: "#3D3D3D",
-  brand: "#b08968",
-  brandDark: "#6e4f37",
-  Dark: "#292828ff",
-  line: "#E6E6E6",
-  soft: "#f5f5dc",
-};
+const logoSize = Math.min(width * 0.28, 140); // slightly smaller than sign-in for balance
 
 export default function EmailSignUp() {
   const fade = useRef(new Animated.Value(0)).current;
@@ -36,7 +28,34 @@ export default function EmailSignUp() {
     Animated.timing(fade, { toValue: 1, duration: 500, useNativeDriver: true }).start();
   }, []);
 
-  const router = useRouter(); // If using React Navigation: const navigation = useNavigation();
+  const router = useRouter();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+
+  // Web => CSS vars from globals.css; Native => JS fallbacks
+  const THEME = Platform.select({
+    web: {
+      bg: "var(--app-bg)",
+      text: "var(--app-text)",
+      sub: "var(--app-sub)",
+      line: "var(--app-line)",
+      soft: "var(--app-soft)",
+      card: "var(--app-card)",
+    },
+    default: {
+      bg: isDark ? "#0B0B0B" : "#FFFFFF",
+      text: isDark ? "#FFFFFF" : "#0B0B0B",
+      sub: isDark ? "#9CA3AF" : "#6B7280",
+      line: isDark ? "#2A2A2A" : "#E5E7EB",
+      soft: isDark ? "#151515" : "#F3F4F6",
+      card: isDark ? "#111111" : "#FFFFFF",
+    },
+  });
+
+  // Swap logo per theme
+  const logoSource = isDark
+    ? require("../../assets/icons/splash-icon-light.png")
+    : require("../../assets/icons/splash-icon-dark.png");
 
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
@@ -59,7 +78,7 @@ export default function EmailSignUp() {
     if (!validate()) return;
     try {
       setBusy(true);
-      // TODO: call your API: await api.registerWithEmail({ email, password: pw })
+      // TODO: call your API
       await new Promise((r) => setTimeout(r, 800));
       Alert.alert("Success", "Account created!");
       // router.replace("/(tabs)/home");
@@ -73,7 +92,6 @@ export default function EmailSignUp() {
   const onGoogle = async () => {
     try {
       setLoadingGoogle(true);
-      // TODO: integrate Google OAuth for signup
       await new Promise((r) => setTimeout(r, 600));
     } catch (e: any) {
       Alert.alert("Google sign-up failed", e?.message ?? "Try again.");
@@ -85,7 +103,6 @@ export default function EmailSignUp() {
   const onFacebook = async () => {
     try {
       setLoadingFacebook(true);
-      // TODO: integrate Facebook OAuth for signup
       await new Promise((r) => setTimeout(r, 600));
     } catch (e: any) {
       Alert.alert("Facebook sign-up failed", e?.message ?? "Try again.");
@@ -95,60 +112,53 @@ export default function EmailSignUp() {
   };
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: COLORS.bg }}>
-      {/* Back arrow (icon only, no button background) */}
+    <SafeAreaView className="flex-1" style={{ backgroundColor: THEME.bg as any }}>
+      {/* Back arrow */}
       <TouchableOpacity
         className="mt-10"
-        onPress={() => router.back()} // Or navigation.goBack()
-        style={{
-          position: "absolute",
-          top: 12,
-          left: 16,
-          zIndex: 50,
-        }}
+        onPress={() => router.back()}
+        style={{ position: "absolute", top: 12, left: 16, zIndex: 50 }}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         accessibilityRole="button"
         accessibilityLabel="Go back"
       >
-        <ChevronLeft size={28} strokeWidth={2.5} color={COLORS.Dark} />
+        <ChevronLeft size={28} strokeWidth={2.5} color={String(THEME.text)} />
       </TouchableOpacity>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 36 }}>
         <Animated.View className="px-6" style={{ opacity: fade }}>
-          {/* Logo */}
-          <View className="items-center mt-14 mb-8">
-            <Image
-              source={require("../../assets/images/logo.png")}
-              style={{ width: logoSize, height: logoSize }}
-              resizeMode="contain"
-            />
+          {/* Tight logo + Jirani text */}
+          <View className="mt-14 mb-8 flex-row items-center justify-center">
+            <Image source={logoSource} style={{ width: logoSize, height: logoSize }} resizeMode="contain" />
+           
           </View>
 
           {/* Copy */}
-          <Text className="uppercase tracking-wide text-center text-[13px]" style={{ color: COLORS.sub }}>
-            Welcome to Biblion
+          <Text className="uppercase tracking-wide text-center text-[13px]" style={{ color: THEME.sub as any }}>
+            Welcome to Jirani
           </Text>
 
           <Text
             className="text-center text-[28px] font-extrabold leading-9 mt-1.5 mb-4"
-            style={{ color: COLORS.text }}
+            style={{ color: THEME.text as any }}
           >
-            Create your account 
+            Create your account
           </Text>
 
-          <Text className="text-center text-[15px] mt-2.5" style={{ color: COLORS.sub }}>
-          Open the Word, share your thoughts, and let Shep encourage you back when life feels busy.
+          <Text className="text-center text-[15px] mt-2.5" style={{ color: THEME.sub as any }}>
+            Build itineraries, split costs, and coordinate with friends — all in one place.
           </Text>
 
           {/* Email field */}
           <View className="mt-6">
-            <Text className="mb-2 text-[13px]" style={{ color: COLORS.sub }}>
+            <Text className="mb-2 text-[13px]" style={{ color: THEME.sub as any }}>
               Email
             </Text>
             <View
-              className="w-full flex-row items-center rounded-2xl border bg-white px-4 py-1.5"
+              className="w-full flex-row items-center rounded-2xl border px-4 py-1.5"
               style={{
-                borderColor: errors.email ? "#ef4444" : COLORS.line,
+                backgroundColor: THEME.card as any,
+                borderColor: (errors.email ? "#ef4444" : THEME.line) as any,
                 shadowColor: "#000",
                 shadowOpacity: 0.05,
                 shadowRadius: 8,
@@ -156,14 +166,17 @@ export default function EmailSignUp() {
                 elevation: 2,
               }}
             >
-              <Mail size={18} color={errors.email ? "#ef4444" : focus.email ? COLORS.brand : COLORS.brandDark} />
+              <Mail
+                size={18}
+                color={errors.email ? "#ef4444" : (focus.email ? String(THEME.text) : String(THEME.sub))}
+              />
               <TextInput
                 value={email}
                 onChangeText={setEmail}
                 placeholder="you@example.com"
-                placeholderTextColor="#8a8a8a"
-                className="ml-2 flex-1 text-[16px]"
-                style={{ color: COLORS.text }}
+                placeholderTextColor={isDark ? "#A3A3A3" : "#8A8A8A"}
+                className="ml-2 flex-1  p-3 text-[16px]"
+                style={{ color: THEME.text as any }}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 returnKeyType="next"
@@ -176,13 +189,14 @@ export default function EmailSignUp() {
 
           {/* Password field */}
           <View className="mt-4">
-            <Text className="mb-2 text-[13px]" style={{ color: COLORS.sub }}>
+            <Text className="mb-2 text-[13px]" style={{ color: THEME.sub as any }}>
               Password
             </Text>
             <View
-              className="w-full flex-row items-center rounded-2xl border bg-white px-4 py-1.5"
+              className="w-full flex-row items-center rounded-2xl border px-4 py-1.5"
               style={{
-                borderColor: errors.pw ? "#ef4444" : COLORS.line,
+                backgroundColor: THEME.card as any,
+                borderColor: (errors.pw ? "#ef4444" : THEME.line) as any,
                 shadowColor: "#000",
                 shadowOpacity: 0.05,
                 shadowRadius: 8,
@@ -190,14 +204,17 @@ export default function EmailSignUp() {
                 elevation: 2,
               }}
             >
-              <Lock size={18} color={errors.pw ? "#ef4444" : focus.pw ? COLORS.brand : COLORS.brandDark} />
+              <Lock
+                size={18}
+                color={errors.pw ? "#ef4444" : (focus.pw ? String(THEME.text) : String(THEME.sub))}
+              />
               <TextInput
                 value={pw}
                 onChangeText={setPw}
                 placeholder="••••••••"
-                placeholderTextColor="#8a8a8a"
-                className="ml-2 flex-1 text-[16px]"
-                style={{ color: COLORS.text }}
+                placeholderTextColor={isDark ? "#A3A3A3" : "#8A8A8A"}
+                className="ml-2 flex-1 p-3 text-[16px]"
+                style={{ color: THEME.text as any }}
                 secureTextEntry={!showPw}
                 autoCapitalize="none"
                 returnKeyType="done"
@@ -205,20 +222,24 @@ export default function EmailSignUp() {
                 onBlur={() => setFocus((f) => ({ ...f, pw: false }))}
               />
               <Pressable onPress={() => setShowPw((v) => !v)} hitSlop={8} className="pl-2">
-                {showPw ? <Eye size={18} color={COLORS.brandDark} /> : <EyeOff size={18} color={COLORS.brandDark} />}
+                {showPw ? (
+                  <Eye size={18} color={String(THEME.text)} />
+                ) : (
+                  <EyeOff size={18} color={String(THEME.sub)} />
+                )}
               </Pressable>
             </View>
             {errors.pw && <Text className="mt-1 text-xs text-red-500">{errors.pw}</Text>}
           </View>
 
-          {/* Create Account button */}
+          {/* Create Account */}
           <TouchableOpacity
             onPress={onSubmit}
             disabled={busy}
             activeOpacity={0.9}
             className={`mt-6 w-full items-center justify-center rounded-2xl py-4 ${busy ? "opacity-80" : ""}`}
             style={{
-              backgroundColor: COLORS.brand,
+              backgroundColor: THEME.text as any, // solid monochrome primary
               shadowColor: "#000",
               shadowOpacity: 0.08,
               shadowRadius: 8,
@@ -229,35 +250,37 @@ export default function EmailSignUp() {
             accessibilityLabel="Create account"
           >
             {busy ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={isDark ? "#0B0B0B" : "#FFFFFF"} />
             ) : (
-              <Text className="text-base font-semibold text-white">Create Account</Text>
+              <Text
+                className="text-base font-semibold"
+                style={{ color: isDark ? "#0B0B0B" : "#FFFFFF" }} // contrast text
+              >
+                Create Account
+              </Text>
             )}
           </TouchableOpacity>
 
-          {/* Spacer */}
-          <View className="mt-5" />
-
           {/* Divider */}
-          <View className="my-2 flex-row items-center">
-            <View className="h-[1px] flex-1" style={{ backgroundColor: COLORS.line }} />
-            <Text className="mx-2 text-[13px]" style={{ color: COLORS.sub }}>
+          <View className="my-5 flex-row items-center">
+            <View className="h-[1px] flex-1" style={{ backgroundColor: THEME.line as any }} />
+            <Text className="mx-2 text-[13px]" style={{ color: THEME.sub as any }}>
               or
             </Text>
-            <View className="h-[1px] flex-1" style={{ backgroundColor: COLORS.line }} />
+            <View className="h-[1px] flex-1" style={{ backgroundColor: THEME.line as any }} />
           </View>
 
-          {/* Social sign-up buttons (spacious & clean) */}
           {/* Google */}
           <TouchableOpacity
             onPress={onGoogle}
             activeOpacity={0.9}
             disabled={loadingGoogle}
-            className="mt-4 w-full items-center justify-center rounded-full border bg-white py-3.5"
+            className="w-full items-center justify-center rounded-full border py-3.5"
             style={{
-              borderColor: COLORS.line,
+              backgroundColor: THEME.card as any,
+              borderColor: THEME.line as any,
               shadowColor: "#000",
-              shadowOpacity: 0.06,
+              shadowOpacity: isDark ? 0.15 : 0.06,
               shadowRadius: 6,
               shadowOffset: { width: 0, height: 4 },
               elevation: 3,
@@ -266,7 +289,7 @@ export default function EmailSignUp() {
             accessibilityLabel="Sign up with Google"
           >
             {loadingGoogle ? (
-              <ActivityIndicator color={COLORS.brand} />
+              <ActivityIndicator color={THEME.text as any} />
             ) : (
               <View className="flex-row items-center justify-center">
                 <Image
@@ -274,23 +297,24 @@ export default function EmailSignUp() {
                   className="mr-2 h-5 w-5"
                   resizeMode="contain"
                 />
-                <Text className="text-base font-semibold" style={{ color: COLORS.text }}>
+                <Text className="text-base font-semibold" style={{ color: THEME.text as any }}>
                   Sign up with Google
                 </Text>
               </View>
             )}
           </TouchableOpacity>
 
-          {/* Facebook */}
+          {/* Facebook (monochrome to match brand style) */}
           <TouchableOpacity
             onPress={onFacebook}
             activeOpacity={0.9}
             disabled={loadingFacebook}
-            className="mt-3 w-full items-center justify-center rounded-full border bg-white py-3.5"
+            className="mt-3 w-full items-center justify-center rounded-full border py-3.5"
             style={{
-              borderColor: COLORS.line,
+              backgroundColor: THEME.card as any,
+              borderColor: THEME.line as any,
               shadowColor: "#000",
-              shadowOpacity: 0.06,
+              shadowOpacity: isDark ? 0.15 : 0.06,
               shadowRadius: 6,
               shadowOffset: { width: 0, height: 4 },
               elevation: 3,
@@ -299,11 +323,11 @@ export default function EmailSignUp() {
             accessibilityLabel="Sign up with Facebook"
           >
             {loadingFacebook ? (
-              <ActivityIndicator color="#1877F2" />
+              <ActivityIndicator color={THEME.text as any} />
             ) : (
               <View className="flex-row items-center justify-center">
-                <Facebook size={20} color="#1877F2" />
-                <Text className="ml-2 text-base font-semibold" style={{ color: COLORS.text }}>
+                <Facebook size={20} color={String(THEME.text)} />
+                <Text className="ml-2 text-base font-semibold" style={{ color: THEME.text as any }}>
                   Sign up with Facebook
                 </Text>
               </View>
@@ -312,17 +336,11 @@ export default function EmailSignUp() {
 
           {/* Footer */}
           <View className="mt-6 items-center">
-            <Text className="text-[14px]" style={{ color: COLORS.sub }}>
+            <Text className="text-[14px]" style={{ color: THEME.sub as any }}>
               Already have an account?{" "}
-              <Text className="font-bold" style={{ color: COLORS.brand }} onPress={() => router.push("/(auth)/sign-in")}>
+              <Text className="font-bold" style={{ color: THEME.text as any }} onPress={() => router.push("/(auth)/sign-in")}>
                 Sign in
               </Text>
-            </Text>
-          </View>
-
-          <View className="mt-5 items-center">
-            <Text className="text-center text-[12px] text-[#6f6f6f]">
-              Shep: “One step at a time. Your info stays private.”
             </Text>
           </View>
         </Animated.View>
